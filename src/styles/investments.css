@@ -1,0 +1,16 @@
+.form-group {
+    margin-top: 25px;
+    width: 400px;
+}
+
+.formHome {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.errorForm {
+    color: red;
+    margin-bottom: 20px;
+}
