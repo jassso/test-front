@@ -110,7 +110,6 @@ const Investments = () => {
     if (isValidForm()) {
       setFormData(tempForm);
       investmentsRequest(tempForm).then((result) => {
-        console.log(result);
         if (result.status === 200) {
           setReponse(result.data);
         } else if (result.code === "ERR_NETWORK") {
@@ -118,6 +117,7 @@ const Investments = () => {
         }
       });
       setMessage("");
+      setErrMessage("");
     }
   };
 
