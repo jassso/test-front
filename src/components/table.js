@@ -1,66 +1,31 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import DataTable from "react-data-table-component";
 import "../styles/table.css";
-
-const data = [
-  {
-    id: 1,
-    anho: "2020",
-    saldoIni: "1000",
-    aportacion: "2000",
-    rendimiento: "3000",
-    saldoFin: "4000",
-  },
-  {
-    id: 2,
-    anho: "2021",
-    saldoIni: "1000",
-    aportacion: "2000",
-    rendimiento: "3000",
-    saldoFin: "4000",
-  },
-  {
-    id: 3,
-    anho: "2022",
-    saldoIni: "1000",
-    aportacion: "2000",
-    rendimiento: "3000",
-    saldoFin: "4000",
-  },
-  {
-    id: 4,
-    anho: "2023",
-    saldoIni: "1000",
-    aportacion: "2000",
-    rendimiento: "3000",
-    saldoFin: "4000",
-  },
-];
 
 const columns = [
   {
     name: "Año",
-    selector: (row) => row.anho,
+    selector: (row) => row.year,
     center: true,
   },
   {
     name: "Saldo Inicial",
-    selector: (row) => row.saldoIni,
+    selector: (row) => row.initialBalance,
     center: true,
   },
   {
     name: "Aportación",
-    selector: (row) => row.aportacion,
+    selector: (row) => row.contribution,
     center: true,
   },
   {
     name: "Rendimiento",
-    selector: (row) => row.rendimiento,
+    selector: (row) => row.yearlyInvestmentReturn,
     center: true,
   },
   {
     name: "Saldo Final",
-    selector: (row) => row.saldoFin,
+    selector: (row) => row.finalBalance,
     center: true,
   },
 ];
@@ -74,13 +39,21 @@ const customizing = {
   },
 };
 
-const Table = () => {
+const Table = ({ dataParent }) => {
+  const [tableData, setTableData] = useState([]);
+
+  useEffect(() => {
+    if (dataParent) {
+      setTableData(dataParent);
+    }
+  }, [dataParent]);
+
   return (
     <div className="table">
       <DataTable
         title="Resultado de Inversiones"
         columns={columns}
-        data={data}
+        data={tableData}
         customStyles={customizing}
       />
     </div>

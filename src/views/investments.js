@@ -1,20 +1,22 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "../styles/investments.css";
 import Table from "../components/table";
+import investmentsRequest from "../actions/investmentsRequest";
 
 const Investments = () => {
   const [formData, setFormData] = useState({
-    invIni: "",
-    aporAnual: "",
-    porInAnual: "",
-    anhoInv: "",
-    porRend: "",
+    initialInvestment: "",
+    annualContribution: "",
+    yearsOfInvestment: "",
+    annualContributionIncreasement: "",
+    investmentReturn: "",
   });
 
   const [message, setMessage] = useState("");
   const [response, setReponse] = useState({
-    ganancia: "111111111111",
-    monFin: "22222222222",
+    finalBalance: "",
+    investmentEarnings: "",
+    investments: {},
   });
 
   const handleInputChange = ({ target }) => {
@@ -24,52 +26,87 @@ const Investments = () => {
     });
   };
 
+  const handleReset = (e) => {
+    e.preventDefault();
+    setReponse({
+      ...response,
+      finalBalance: "",
+      investmentEarnings: "",
+      investments: {},
+    });
+    setFormData({
+      ...formData,
+      initialInvestment: "",
+      annualContribution: "",
+      yearsOfInvestment: "",
+      annualContributionIncreasement: "",
+      investmentReturn: "",
+    });
+    setMessage("");
+  };
+
   const isValidForm = () => {
     const ln = /^[0-9]*$/;
 
-    if (formData.invIni === "" || !ln.test(formData.invIni)) {
+    if (
+      formData.initialInvestment === "" ||
+      !ln.test(formData.initialInvestment.trim()) ||
+      formData.initialInvestment.length <= 3
+    ) {
+      setMessage(
+        "No es posible procesar su solicitud con los datos proporcionados"
+      );
+      return false;
+    } else if (
+      !ln.test(formData.annualContributionIncreasement.trim()) ||
+      !ln.test(formData.annualContribution.trim())
+    ) {
+      setMessage(
+        "No es posible procesar su solicitud con los datos proporcionados"
+      );
+      return false;
+    } else if (
+      formData.yearsOfInvestment === "" ||
+      formData.yearsOfInvestment === "0" ||
+      !ln.test(formData.yearsOfInvestment.trim())
+    ) {
+      setMessage(
+        "No es posible procesar su solicitud con los datos proporcionados"
+      );
+      return false;
+    } else if (
+      formData.investmentReturn === "" ||
+      !ln.test(formData.investmentReturn.trim())
+    ) {
       setMessage(
         "No es posible procesar su solicitud con los datos proporcionados"
       );
       return false;
     }
-    if (formData.aporAnual === "" || !ln.test(formData.aporAnual)) {
-      setMessage(
-        "No es posible procesar su solicitud con los datos proporcionados"
-      );
-      return false;
-    }
-    if (formData.porInAnual === "" || !ln.test(formData.porInAnual)) {
-      setMessage(
-        "No es posible procesar su solicitud con los datos proporcionados"
-      );
-      return false;
-    }
-    if (formData.anhoInv === "" || !ln.test(formData.anhoInv)) {
-      setMessage(
-        "No es posible procesar su solicitud con los datos proporcionados"
-      );
-      return false;
-    }
-    if (formData.porRend === "" || !ln.test(formData.porRend)) {
-      setMessage(
-        "No es posible procesar su solicitud con los datos proporcionados"
-      );
-      return false;
-    }
-
     return true;
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
 
+    const tempForm = {
+      ...formData,
+      annualContribution:
+        formData.annualContribution === "" ? "0" : formData.annualContribution,
+      annualContributionIncreasement:
+        formData.annualContributionIncreasement === ""
+          ? "0"
+          : formData.annualContributionIncreasement,
+    };
+
     if (isValidForm()) {
+      setFormData(tempForm);
+      investmentsRequest(tempForm).then((result) => {
+        setReponse(result);
+      });
       setMessage("");
     }
   };
-
-  console.log("form", formData);
 
   return (
     <div className="formHome">
@@ -82,9 +119,8 @@ const Investments = () => {
           <div className="input-group mb-3">
             <span className="input-group-text">$</span>
             <input
-              type="text"
-              name="invIni"
-              value={formData.invIni}
+              name="initialInvestment"
+              value={formData.initialInvestment}
               onChange={handleInputChange}
               className="form-control"
               placeholder="Inverson Inicial"
@@ -94,9 +130,8 @@ const Investments = () => {
           <div className="input-group mb-3">
             <span className="input-group-text">$</span>
             <input
-              type="text"
-              name="aporAnual"
-              value={formData.aporAnual}
+              name="annualContribution"
+              value={formData.annualContribution}
               onChange={handleInputChange}
               className="form-control"
               placeholder="Aportacion Anual"
@@ -106,9 +141,8 @@ const Investments = () => {
           <div className="input-group mb-3">
             <span className="input-group-text">%</span>
             <input
-              type="text"
-              value={formData.porInAnual}
-              name="porInAnual"
+              name="annualContributionIncreasement"
+              value={formData.annualContributionIncreasement}
               onChange={handleInputChange}
               className="form-control"
               placeholder="Porcentaje de Incremento Anual"
@@ -117,9 +151,8 @@ const Investments = () => {
           </div>
           <div className="mb-3">
             <input
-              type="text"
-              name="anhoInv"
-              value={formData.anhoInv}
+              name="yearsOfInvestment"
+              value={formData.yearsOfInvestment}
               onChange={handleInputChange}
               className="form-control"
               placeholder="Años de Inversion"
@@ -128,10 +161,9 @@ const Investments = () => {
           <div className="input-group mb-3">
             <span className="input-group-text">%</span>
             <input
-              type="text"
               className="form-control"
-              name="porRend"
-              value={formData.porRend}
+              name="investmentReturn"
+              value={formData.investmentReturn}
               onChange={handleInputChange}
               placeholder="Porcentaje de rendimiento"
               aria-label="Dollar amount (with dot and two decimal places)"
@@ -139,25 +171,38 @@ const Investments = () => {
           </div>
         </div>
         <div className="errorForm form-group">{message}</div>
-        <button className="calc btn btn-outline-dark" onClick={handleSubmit}>
-          Calcular
-        </button>
+        <div className="row">
+          <button
+            className="calc btn btn-outline-dark col-3"
+            onClick={handleSubmit}
+          >
+            Calcular
+          </button>
+          <button
+            className="calc btn btn-secondary col-3"
+            onClick={handleReset}
+          >
+            Reset
+          </button>
+        </div>
       </form>
 
-      {response.ganancia && response.monFin && (
+      {response.finalBalance && response.investmentEarnings && (
         <>
           <hr style={{ width: "700px" }} />
           <span className="input-group-text" style={{ marginTop: "20px" }}>
-            Ganancia por Inversion: ${response.ganancia}
+            Ganancia por Inversion: ${response.finalBalance}
           </span>
         </>
       )}
-      {response.ganancia && response.monFin && (
+      {response.finalBalance && response.investmentEarnings && (
         <span className="input-group-text" style={{ marginTop: "20px" }}>
-          Monto Final: ${response.monFin}
+          Monto Final: ${response.investmentEarnings}
         </span>
       )}
-      {response.ganancia && response.monFin && <Table />}
+      {response.finalBalance && response.investmentEarnings && (
+        <Table dataParent={response.investments} />
+      )}
     </div>
   );
 };

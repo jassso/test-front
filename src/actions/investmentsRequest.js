@@ -1,11 +1,12 @@
-import React from "react";
+import axios from "axios";
 
-const investmentsRequest = () => {
-  const URL = "http://localhost:8080/";
+const investmentsRequest = async (dataObject) => {
+  const URL = "http://localhost:8081/";
+  const investMapping = "Invest";
 
-  return axios
-    .get(`${URL}Invest`)
-    .then(res)
+  return await axios
+    .post(URL.concat(investMapping), dataObject)
+    .then((res) => res.data)
     .catch((err) => console.log(err));
 };
 
