@@ -1,4 +1,5 @@
 import React from "react";
+import { NavLink } from "react-router-dom";
 import navImage from "../assets/navImage.png";
 import "../styles/navbar.css";
 
@@ -6,24 +7,38 @@ const Navbar = () => {
   return (
     <div>
       <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
-        <a className="navbar-brand" href="/">
+        <NavLink className="logo" to={"/"}>
           <img
             src={navImage}
-            width="30"
-            height="30"
+            width="40"
+            height="40"
             className="image d-inline-block align-top"
             alt=""
           />
           &nbsp;TIS
-        </a>
+        </NavLink>
         <div className="collapse navbar-collapse">
           <div className="navbar-nav">
-            <a className="nav-item nav-link" href="/">
+            <NavLink
+              style={({ isActive }) => ({
+                color: isActive ? "#fff" : "#545e6f",
+                textDecoration: "none",
+                marginRight: "10px",
+              })}
+              to={"/"}
+            >
               Home
-            </a>
-            <a className="nav-item nav-link" href="/Investments">
-              Inversiones
-            </a>
+            </NavLink>
+            <NavLink
+              style={({ isActive }) => ({
+                color: isActive ? "#fff" : "#545e6f",
+                textDecoration: "none",
+                marginRight: "10px",
+              })}
+              to={"Investments"}
+            >
+              Investments
+            </NavLink>
           </div>
         </div>
       </nav>

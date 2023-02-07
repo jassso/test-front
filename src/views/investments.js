@@ -13,8 +13,8 @@ const Investments = () => {
 
   const [message, setMessage] = useState("");
   const [response, setReponse] = useState({
-    ganancia: "1",
-    monFin: "1",
+    ganancia: "111111111111",
+    monFin: "22222222222",
   });
 
   const handleInputChange = ({ target }) => {
@@ -73,9 +73,10 @@ const Investments = () => {
 
   return (
     <div className="formHome">
-      <h3 style={{ marginTop: "15px" }}>
+      <h3 style={{ marginTop: "30px" }}>
         Ingresa los siguientes datos para realizar el cálculo
       </h3>
+      <hr style={{ width: "700px" }} />
       <form onSubmit={handleSubmit}>
         <div className="form-group">
           <div className="input-group mb-3">
@@ -138,20 +139,24 @@ const Investments = () => {
           </div>
         </div>
         <div className="errorForm form-group">{message}</div>
-        <button className="btn btn-outline-dark" onClick={handleSubmit}>
+        <button className="calc btn btn-outline-dark" onClick={handleSubmit}>
           Calcular
         </button>
-        {response.ganancia && response.monFin && (
+      </form>
+
+      {response.ganancia && response.monFin && (
+        <>
+          <hr style={{ width: "700px" }} />
           <span className="input-group-text" style={{ marginTop: "20px" }}>
             Ganancia por Inversion: ${response.ganancia}
           </span>
-        )}
-        {response.ganancia && response.monFin && (
-          <span className="input-group-text" style={{ marginTop: "20px" }}>
-            Monto Final: ${response.monFin}
-          </span>
-        )}
-      </form>
+        </>
+      )}
+      {response.ganancia && response.monFin && (
+        <span className="input-group-text" style={{ marginTop: "20px" }}>
+          Monto Final: ${response.monFin}
+        </span>
+      )}
       {response.ganancia && response.monFin && <Table />}
     </div>
   );

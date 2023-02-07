@@ -1,3 +1,15 @@
 .image {
     margin-left: 15px;
 }
+
+.logo {
+    color: #fff;
+    text-decoration: none;
+    margin-right: 30px;
+    align-items: center;
+    font-size: 25px;
+}
+
+.logo:hover {
+    color: #fff;
+}
