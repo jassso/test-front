@@ -18,6 +18,13 @@ const Investments = () => {
     investmentEarnings: "",
     investments: {},
   });
+  const [errMessage, setErrMessage] = useState("");
+
+  const alertError = (message) => (
+    <div class="alert alert-danger" role="alert">
+      {message}
+    </div>
+  );
 
   const handleInputChange = ({ target }) => {
     setFormData({
@@ -43,6 +50,7 @@ const Investments = () => {
       investmentReturn: "",
     });
     setMessage("");
+    setErrMessage("");
   };
 
   const isValidForm = () => {
@@ -102,7 +110,12 @@ const Investments = () => {
     if (isValidForm()) {
       setFormData(tempForm);
       investmentsRequest(tempForm).then((result) => {
-        setReponse(result);
+        console.log(result);
+        if (result.status === 200) {
+          setReponse(result.data);
+        } else if (result.code === "ERR_NETWORK") {
+          setErrMessage(alertError(result.message));
+        }
       });
       setMessage("");
     }
@@ -186,6 +199,7 @@ const Investments = () => {
           </button>
         </div>
       </form>
+      {errMessage}
 
       {response.finalBalance && response.investmentEarnings && (
         <>

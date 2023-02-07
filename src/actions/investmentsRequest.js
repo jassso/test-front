@@ -6,8 +6,8 @@ const investmentsRequest = async (dataObject) => {
 
   return await axios
     .post(URL.concat(investMapping), dataObject)
-    .then((res) => res.data)
-    .catch((err) => console.log(err));
+    .then((res) => res)
+    .catch((err) => err);
 };
 
 export default investmentsRequest;
