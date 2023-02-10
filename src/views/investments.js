@@ -1,7 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import "../styles/investments.css";
 import Table from "../components/table";
-import investmentsRequest from "../actions/investmentsRequest";
+import axios from "../utils/axiosConfig";
+import useInvestmentsRequest from "../actions/investmentsRequest";
+import { COMMONERRORS, ENDPOINTS, METHODS } from "../utils/requestConfig";
 
 const Investments = () => {
   const [formData, setFormData] = useState({
@@ -19,6 +21,7 @@ const Investments = () => {
     investments: {},
   });
   const [errMessage, setErrMessage] = useState("");
+  const { data, error, loading, fetching } = useInvestmentsRequest();
 
   const alertError = (message) => (
     <div class="alert alert-danger" role="alert">
@@ -61,34 +64,26 @@ const Investments = () => {
       !ln.test(formData.initialInvestment.trim()) ||
       formData.initialInvestment.length <= 3
     ) {
-      setMessage(
-        "No es posible procesar su solicitud con los datos proporcionados"
-      );
+      setMessage(COMMONERRORS.investmenError);
       return false;
     } else if (
       !ln.test(formData.annualContributionIncreasement.trim()) ||
       !ln.test(formData.annualContribution.trim())
     ) {
-      setMessage(
-        "No es posible procesar su solicitud con los datos proporcionados"
-      );
+      setMessage(COMMONERRORS.investmenError);
       return false;
     } else if (
       formData.yearsOfInvestment === "" ||
       formData.yearsOfInvestment === "0" ||
       !ln.test(formData.yearsOfInvestment.trim())
     ) {
-      setMessage(
-        "No es posible procesar su solicitud con los datos proporcionados"
-      );
+      setMessage(COMMONERRORS.investmenError);
       return false;
     } else if (
       formData.investmentReturn === "" ||
       !ln.test(formData.investmentReturn.trim())
     ) {
-      setMessage(
-        "No es posible procesar su solicitud con los datos proporcionados"
-      );
+      setMessage(COMMONERRORS.investmenError);
       return false;
     }
     return true;
@@ -97,6 +92,14 @@ const Investments = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
 
+    setReponse({
+      ...response,
+      finalBalance: "",
+      investmentEarnings: "",
+      investments: {},
+    });
+    setMessage("");
+    setErrMessage("");
     const tempForm = {
       ...formData,
       annualContribution:
@@ -109,15 +112,21 @@ const Investments = () => {
 
     if (isValidForm()) {
       setFormData(tempForm);
-      investmentsRequest(tempForm).then((result) => {
-        if (result.status === 200) {
-          setReponse(result.data);
-        } else if (result.code === "ERR_NETWORK") {
-          setErrMessage(alertError(result.message));
+      fetching(
+        {
+          AxiosInstance: axios,
+          method: METHODS.POST,
+          url: ENDPOINTS.investmenURI,
+          params: tempForm,
+        },
+        (responseData) => {
+          if (responseData.status === 200) {
+            setReponse(responseData.data);
+          } else if ((responseData.name = "AxiosError")) {
+            setErrMessage(alertError(responseData.message));
+          }
         }
-      });
-      setMessage("");
-      setErrMessage("");
+      );
     }
   };
 
@@ -187,7 +196,7 @@ const Investments = () => {
         <div className="row">
           <button
             className="calc btn btn-outline-dark col-3"
-            onClick={handleSubmit}
+            onClick={(e) => handleSubmit(e)}
           >
             Calcular
           </button>
@@ -199,8 +208,8 @@ const Investments = () => {
           </button>
         </div>
       </form>
+      {!!loading && <h3>lodin...</h3>}
       {errMessage}
-
       {response.finalBalance && response.investmentEarnings && (
         <>
           <hr style={{ width: "700px" }} />
