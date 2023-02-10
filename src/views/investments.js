@@ -13,7 +13,6 @@ const Investments = () => {
     annualContributionIncreasement: "",
     investmentReturn: "",
   });
-
   const [message, setMessage] = useState("");
   const [response, setReponse] = useState({
     finalBalance: "",
@@ -21,7 +20,8 @@ const Investments = () => {
     investments: {},
   });
   const [errMessage, setErrMessage] = useState("");
-  const { data, error, loading, fetching } = useInvestmentsRequest();
+  const { loading, fetching } = useInvestmentsRequest();
+  const loadingIcon = <div className="lds-hourglass"></div>;
 
   const alertError = (message) => (
     <div class="alert alert-danger" role="alert">
@@ -208,7 +208,7 @@ const Investments = () => {
           </button>
         </div>
       </form>
-      {!!loading && <h3>lodin...</h3>}
+      {!!loading && loadingIcon}
       {errMessage}
       {response.finalBalance && response.investmentEarnings && (
         <>
