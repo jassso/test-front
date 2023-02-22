@@ -2,11 +2,12 @@ import React, { useState } from "react";
 import "../styles/investments.css";
 import Table from "../components/table";
 import axios from "../utils/axiosConfig";
-import useInvestmentsRequest from "../actions/investmentsRequest";
+import useInvestmentsRequest from "../hooks/investmentsRequest";
 import { COMMONERRORS, ENDPOINTS, METHODS } from "../utils/requestConfig";
+import useForms from "../hooks/forms";
 
 const Investments = () => {
-  const [formData, setFormData] = useState({
+  const [formValues, handleOnChange, reset, customValues] = useForms({
     initialInvestment: "",
     annualContribution: "",
     yearsOfInvestment: "",
@@ -24,34 +25,19 @@ const Investments = () => {
   const loadingIcon = <div className="lds-hourglass"></div>;
 
   const alertError = (message) => (
-    <div class="alert alert-danger" role="alert">
+    <div className="alert alert-danger" role="alert">
       {message}
     </div>
   );
 
-  const handleInputChange = ({ target }) => {
-    setFormData({
-      ...formData,
-      [target.name]: target.value,
-    });
-  };
-
   const handleReset = (e) => {
     e.preventDefault();
     setReponse({
-      ...response,
       finalBalance: "",
       investmentEarnings: "",
       investments: {},
     });
-    setFormData({
-      ...formData,
-      initialInvestment: "",
-      annualContribution: "",
-      yearsOfInvestment: "",
-      annualContributionIncreasement: "",
-      investmentReturn: "",
-    });
+    reset();
     setMessage("");
     setErrMessage("");
   };
@@ -60,28 +46,28 @@ const Investments = () => {
     const ln = /^[0-9]*$/;
 
     if (
-      formData.initialInvestment === "" ||
-      !ln.test(formData.initialInvestment.trim()) ||
-      formData.initialInvestment.length <= 3
+      formValues.initialInvestment === "" ||
+      !ln.test(formValues.initialInvestment.trim()) ||
+      formValues.initialInvestment.length <= 3
     ) {
       setMessage(COMMONERRORS.investmenError);
       return false;
     } else if (
-      !ln.test(formData.annualContributionIncreasement.trim()) ||
-      !ln.test(formData.annualContribution.trim())
+      !ln.test(formValues.annualContributionIncreasement.trim()) ||
+      !ln.test(formValues.annualContribution.trim())
     ) {
       setMessage(COMMONERRORS.investmenError);
       return false;
     } else if (
-      formData.yearsOfInvestment === "" ||
-      formData.yearsOfInvestment === "0" ||
-      !ln.test(formData.yearsOfInvestment.trim())
+      formValues.yearsOfInvestment === "" ||
+      formValues.yearsOfInvestment === "0" ||
+      !ln.test(formValues.yearsOfInvestment.trim())
     ) {
       setMessage(COMMONERRORS.investmenError);
       return false;
     } else if (
-      formData.investmentReturn === "" ||
-      !ln.test(formData.investmentReturn.trim())
+      formValues.investmentReturn === "" ||
+      !ln.test(formValues.investmentReturn.trim())
     ) {
       setMessage(COMMONERRORS.investmenError);
       return false;
@@ -101,17 +87,19 @@ const Investments = () => {
     setMessage("");
     setErrMessage("");
     const tempForm = {
-      ...formData,
+      ...formValues,
       annualContribution:
-        formData.annualContribution === "" ? "0" : formData.annualContribution,
-      annualContributionIncreasement:
-        formData.annualContributionIncreasement === ""
+        formValues.annualContribution === ""
           ? "0"
-          : formData.annualContributionIncreasement,
+          : formValues.annualContribution,
+      annualContributionIncreasement:
+        formValues.annualContributionIncreasement === ""
+          ? "0"
+          : formValues.annualContributionIncreasement,
     };
 
     if (isValidForm()) {
-      setFormData(tempForm);
+      customValues(tempForm);
       fetching(
         {
           AxiosInstance: axios,
@@ -142,8 +130,8 @@ const Investments = () => {
             <span className="input-group-text">$</span>
             <input
               name="initialInvestment"
-              value={formData.initialInvestment}
-              onChange={handleInputChange}
+              value={formValues.initialInvestment}
+              onChange={(e) => handleOnChange(e)}
               className="form-control"
               placeholder="Inverson Inicial"
               aria-label="Dollar amount (with dot and two decimal places)"
@@ -153,8 +141,8 @@ const Investments = () => {
             <span className="input-group-text">$</span>
             <input
               name="annualContribution"
-              value={formData.annualContribution}
-              onChange={handleInputChange}
+              value={formValues.annualContribution}
+              onChange={(e) => handleOnChange(e)}
               className="form-control"
               placeholder="Aportacion Anual"
               aria-label="Dollar amount (with dot and two decimal places)"
@@ -164,8 +152,8 @@ const Investments = () => {
             <span className="input-group-text">%</span>
             <input
               name="annualContributionIncreasement"
-              value={formData.annualContributionIncreasement}
-              onChange={handleInputChange}
+              value={formValues.annualContributionIncreasement}
+              onChange={handleOnChange}
               className="form-control"
               placeholder="Porcentaje de Incremento Anual"
               aria-label="Dollar amount (with dot and two decimal places)"
@@ -174,8 +162,8 @@ const Investments = () => {
           <div className="mb-3">
             <input
               name="yearsOfInvestment"
-              value={formData.yearsOfInvestment}
-              onChange={handleInputChange}
+              value={formValues.yearsOfInvestment}
+              onChange={handleOnChange}
               className="form-control"
               placeholder="Años de Inversion"
             />
@@ -185,8 +173,8 @@ const Investments = () => {
             <input
               className="form-control"
               name="investmentReturn"
-              value={formData.investmentReturn}
-              onChange={handleInputChange}
+              value={formValues.investmentReturn}
+              onChange={handleOnChange}
               placeholder="Porcentaje de rendimiento"
               aria-label="Dollar amount (with dot and two decimal places)"
             />
